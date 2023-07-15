@@ -1,4 +1,5 @@
 import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 
 // GraphQLスキーマ定義
 const typeDefs = `#graphql
@@ -13,3 +14,14 @@ const resolvers = {
         info: () => 'HackerNewsクローン',
     },
 };
+
+const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+});
+
+const { url } = await startStandaloneServer(server, {
+    listen: { port: 4000 },
+});
+
+console.log(`🚀 ${url}でサーバーを起動中...`);
