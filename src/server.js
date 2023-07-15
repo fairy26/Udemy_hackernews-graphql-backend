@@ -1,5 +1,10 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+
+// for "ReferenceError: __dirname is not defined in ES module scope"
+const __dirname = dirname(new URL(import.meta.url).pathname);
 
 // HackerNewsの各投稿
 let links = [
@@ -9,24 +14,6 @@ let links = [
         url: 'www.udemy-graphql-tutorial.com',
     },
 ];
-
-// GraphQLスキーマ定義
-const typeDefs = `#graphql
-    type Query {
-        info: String!
-        feed: [Link!]
-    }
-
-    type Mutation {
-        post(url: String!, description: String!): Link!
-    }
-
-    type Link {
-        id: ID!
-        description: String!
-        url: String!
-    }
-`;
 
 // リゾルバ関数
 const resolvers = {
@@ -52,7 +39,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
-    typeDefs,
+    typeDefs: readFileSync(join(__dirname, 'schema.gql'), 'utf-8'),
     resolvers,
 });
 
