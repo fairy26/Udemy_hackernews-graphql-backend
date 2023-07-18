@@ -3,37 +3,31 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
 // for "ReferenceError: __dirname is not defined in ES module scope"
 const __dirname = dirname(new URL(import.meta.url).pathname);
-
-// HackerNewsの各投稿
-let links = [
-    {
-        id: 'link-0',
-        description: 'GraphQLチュートリアルをUdemyで学ぶ',
-        url: 'www.udemy-graphql-tutorial.com',
-    },
-];
 
 // リゾルバ関数
 const resolvers = {
     Query: {
         info: () => 'HackerNewsクローン',
-        feed: () => links,
+        feed: async (parent, args, contextValue) => {
+            return contextValue.prisma.link.findMany();
+        },
     },
 
     Mutation: {
-        post: (parent, args) => {
-            let idCount = links.length;
-
-            const link = {
-                id: `link-${idCount++}`,
-                description: args.description,
-                url: args.url,
-            };
-
-            links.push(link);
-            return link;
+        post: (parent, args, contextValue) => {
+            const newLink = contextValue.prisma.link.create({
+                data: {
+                    url: args.url,
+                    description: args.description,
+                },
+            });
+            return newLink;
         },
     },
 };
@@ -45,6 +39,9 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
+    context: async () => ({
+        prisma,
+    }),
 });
 
 console.log(`🚀 ${url}でサーバーを起動中...`);
