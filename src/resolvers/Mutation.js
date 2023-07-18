@@ -1,11 +1,11 @@
-import { hash, compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
-import { APP_SECRET } from '../utls';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { APP_SECRET } from '../utls.js';
 
 // ユーザーの新規登録のリゾルバ
-async function signup(parent, args, contextValue) {
+export async function signup(parent, args, contextValue) {
     // パスワードの設定
-    const password = await hash(args.password, 10);
+    const password = await bcrypt.hash(args.password, 10);
 
     // ユーザーの新規作成
     const user = await contextValue.prisma.user.create({
@@ -15,7 +15,7 @@ async function signup(parent, args, contextValue) {
         },
     });
 
-    const token = sign({ userId: user.id }, APP_SECRET);
+    const token = jwt.sign({ userId: user.id }, APP_SECRET);
 
     return {
         token,
@@ -24,7 +24,7 @@ async function signup(parent, args, contextValue) {
 }
 
 // ユーザーのログインのリゾルバ
-async function login(parent, args, contextValue) {
+export async function login(parent, args, contextValue) {
     const user = await contextValue.prisma.user.findUnique({
         where: { email: args.email },
     });
@@ -33,12 +33,12 @@ async function login(parent, args, contextValue) {
     }
 
     // パスワードの比較
-    const valid = await compare(args.password, user.password);
+    const valid = await bcrypt.compare(args.password, user.password);
     if (!valid) {
         throw new Error('無効なパスワードです');
     }
 
-    const token = sign({ userId: user.id }, APP_SECRET);
+    const token = jwt.sign({ userId: user.id }, APP_SECRET);
 
     return {
         token,
@@ -47,7 +47,7 @@ async function login(parent, args, contextValue) {
 }
 
 // ニュースを投稿するリゾルバ
-async function post(parent, args, contextValue) {
+export async function post(parent, args, contextValue) {
     const { userId } = contextValue;
 
     return await contextValue.prisma.link.create({
@@ -58,9 +58,3 @@ async function post(parent, args, contextValue) {
         },
     });
 }
-
-module.exports = {
-    signup,
-    login,
-    post,
-};

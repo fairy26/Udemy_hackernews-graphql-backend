@@ -1,15 +1,15 @@
-import { verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 
-APP_SECRET = 'GraphQL';
+export const APP_SECRET = 'GraphQL';
 
 // トークンを復号するための関数
 function getTokenPayload(token) {
     // token化される前の情報(user.id)を取得する
-    return verify(token, APP_SECRET);
+    return jwt.verify(token, APP_SECRET);
 }
 
 // ユーザーIDを取得するための関数
-function getUserId(request, authToken) {
+export function getUserId(request, authToken) {
     if (request) {
         const authHeader = request.headers.authorization;
         if (!authHeader) {
@@ -28,8 +28,3 @@ function getUserId(request, authToken) {
 
     throw new Error('認証権限がありません');
 }
-
-module.exports = {
-    APP_SECRET,
-    getUserId,
-};
