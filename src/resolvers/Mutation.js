@@ -1,7 +1,6 @@
 import { hash, compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-
-APP_SECRET = 'GraphQL';
+import { APP_SECRET } from '../utls';
 
 // ユーザーの新規登録のリゾルバ
 async function signup(parent, args, contextValue) {
