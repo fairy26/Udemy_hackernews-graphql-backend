@@ -4,7 +4,13 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 
 import { PrismaClient } from '@prisma/client';
-import { getUserId } from './utls';
+import { getUserId } from './utls.js';
+
+// リゾルバ関係のファイル
+import { feed } from './resolvers/Query.js';
+import { signup, login, post } from './resolvers/Mutation.js';
+import { postedBy } from './resolvers/Link.js';
+import { links } from './resolvers/User.js';
 
 const prisma = new PrismaClient();
 
@@ -14,22 +20,18 @@ const __dirname = dirname(new URL(import.meta.url).pathname);
 // リゾルバ関数
 const resolvers = {
     Query: {
-        info: () => 'HackerNewsクローン',
-        feed: async (parent, args, contextValue) => {
-            return contextValue.prisma.link.findMany();
-        },
+        feed,
     },
-
     Mutation: {
-        post: (parent, args, contextValue) => {
-            const newLink = contextValue.prisma.link.create({
-                data: {
-                    url: args.url,
-                    description: args.description,
-                },
-            });
-            return newLink;
-        },
+        post,
+        signup,
+        login,
+    },
+    Link: {
+        postedBy,
+    },
+    User: {
+        links,
     },
 };
 
