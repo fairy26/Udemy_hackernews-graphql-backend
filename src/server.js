@@ -4,6 +4,7 @@ import { readFileSync } from 'fs';
 import { join, dirname } from 'path';
 
 import { PrismaClient } from '@prisma/client';
+import { getUserId } from './utls';
 
 const prisma = new PrismaClient();
 
@@ -39,8 +40,10 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
     listen: { port: 4000 },
-    context: async () => ({
+    context: async ({ req }) => ({
+        ...req,
         prisma,
+        userId: req && req.headers.authorization ? getUserId(req) : null,
     }),
 });
 
