@@ -10,6 +10,7 @@ type Mutation {
     post(url: String!, description: String!): Link!
     signup(email: String!, password: String!, name: String!): AutoPayload
     login(email: String!, password: String!): AutoPayload
+    vote(linkId: ID!): Vote
 }
 
 type Subscription {
@@ -21,6 +22,7 @@ type Link {
     description: String!
     url: String!
     postedBy: User
+    votes: [Vote!]!
 }
 
 type AutoPayload {
@@ -32,4 +34,10 @@ type User {
     name: String!
     email: String!
     links: [Link!]!
+}
+
+type Vote {
+    id: ID!
+    link: Link!
+    user: User!
 }
