@@ -1,29 +1,26 @@
-import { createServer } from 'http';
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { WebSocketServer } from 'ws';
-import { useServer } from 'graphql-ws/lib/use/ws';
-import express from 'express';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
-import { readFileSync } from 'fs';
-import { join, dirname } from 'path';
-
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { PrismaClient } from '@prisma/client';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import express from 'express';
+import { readFileSync } from 'fs';
+import { PubSub } from 'graphql-subscriptions'; // サブスクリプション
+import { useServer } from 'graphql-ws/lib/use/ws';
+import { createServer } from 'http';
+import { dirname, join } from 'path';
+import { WebSocketServer } from 'ws';
+
 import { getUserId } from './utls.js';
 
 // リゾルバ関係のファイル
-import { feed } from './resolvers/Query.js';
-import { signup, login, post } from './resolvers/Mutation.js';
 import { postedBy } from './resolvers/Link.js';
+import { login, post, signup } from './resolvers/Mutation.js';
+import { feed } from './resolvers/Query.js';
 import { links } from './resolvers/User.js';
 // import { newLink } from './resolvers/Subscription.js';
-
-// サブスクリプション
-import { PubSub } from 'graphql-subscriptions';
 
 const app = express();
 const httpServer = createServer(app);
