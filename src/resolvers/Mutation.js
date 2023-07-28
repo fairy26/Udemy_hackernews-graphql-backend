@@ -62,3 +62,34 @@ export async function post(parent, args, contextValue) {
 
     return newLink;
 }
+
+// 投票するリゾルバ
+export async function vote(parent, args, contextValue) {
+    const { userId } = contextValue;
+
+    const vote = contextValue.prisma.vote.findUnique({
+        where: {
+            linkId_userId: {
+                linkId: Number(args.linkId),
+                userId: userId,
+            },
+        },
+    });
+
+    // 2回投票を防ぐ
+    if (Boolean(vote)) {
+        throw new Error(`すでにその投稿には投票されています: ${linkId}`);
+    }
+
+    // 投票する
+    const newVote = await contextValue.prisma.vote.create({
+        data: {
+            user: { connect: { id: userId } },
+            link: { connect: { id: Number(args.linkId) } },
+        },
+    });
+
+    contextValue.pubsub.publish('NEW_VOTE', { newVote });
+
+    return newVote;
+}

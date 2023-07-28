@@ -18,9 +18,10 @@ import { getUserId } from './utls.js';
 // リゾルバ関係のファイル
 import { postedBy } from './resolvers/Link.js';
 import { login, post, signup } from './resolvers/Mutation.js';
+// import { newLink, newVote } from './resolvers/Subscription.js';
 import { feed } from './resolvers/Query.js';
 import { links } from './resolvers/User.js';
-// import { newLink } from './resolvers/Subscription.js';
+import { link, user } from './resolvers/Vote.js';
 
 const app = express();
 const httpServer = createServer(app);
@@ -46,19 +47,28 @@ const resolvers = {
         signup,
         login,
     },
-    // Subscription: {
-    //     newLink, // FIXME: こっちにしたいけど contextValue.pubsub が解決できない
-    // },
     Subscription: {
         newLink: {
             subscribe: () => pubsub.asyncIterator(['NEW_LINK']),
         }, // FIXME: postedBy が null になるためクエリに含められない
+        newVote: {
+            subscribe: () => pubsub.asyncIterator(['NEW_VOTE']),
+        },
     },
+    // FIXME: こっちにしたいけど contextValue.pubsub が解決できない
+    // Subscription: {
+    //     newLink,
+    //     newVote,
+    // },
     Link: {
         postedBy,
     },
     User: {
         links,
+    },
+    Vote: {
+        link,
+        user,
     },
 };
 
