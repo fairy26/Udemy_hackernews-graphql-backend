@@ -12,7 +12,11 @@ import { signup, login, post } from './resolvers/Mutation.js';
 import { postedBy } from './resolvers/Link.js';
 import { links } from './resolvers/User.js';
 
+// サブスクリプション
+import { PubSub } from 'graphql-subscriptions';
+
 const prisma = new PrismaClient();
+const pubsub = new PubSub();
 
 // for "ReferenceError: __dirname is not defined in ES module scope"
 const __dirname = dirname(new URL(import.meta.url).pathname);
@@ -45,6 +49,7 @@ const { url } = await startStandaloneServer(server, {
     context: async ({ req }) => ({
         ...req,
         prisma,
+        pubsub,
         userId: req && req.headers.authorization ? getUserId(req) : null,
     }),
 });
