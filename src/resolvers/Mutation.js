@@ -58,7 +58,7 @@ export async function post(parent, args, contextValue) {
         },
     });
 
-    contextValue.pubsub.publish('NEW_LINK', newLink);
+    contextValue.pubsub.publish('NEW_LINK', { newLink });
 
     return newLink;
 }
