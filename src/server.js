@@ -11,6 +11,7 @@ import { feed } from './resolvers/Query.js';
 import { signup, login, post } from './resolvers/Mutation.js';
 import { postedBy } from './resolvers/Link.js';
 import { links } from './resolvers/User.js';
+import { newLink } from './resolvers/Subscription.js';
 
 // サブスクリプション
 import { PubSub } from 'graphql-subscriptions';
@@ -30,6 +31,9 @@ const resolvers = {
         post,
         signup,
         login,
+    },
+    Subscription: {
+        newLink,
     },
     Link: {
         postedBy,
