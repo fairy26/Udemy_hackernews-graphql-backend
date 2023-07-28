@@ -3,7 +3,7 @@ function newLinkSubscription(parent, args, contextValue) {
 }
 
 export const newLink = {
-    subscription: newLinkSubscription,
+    subscribe: newLinkSubscription,
     resolve: (payload) => {
         return payload;
     },
